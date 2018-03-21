@@ -13,6 +13,7 @@ secret_key = 'trgmtdMlc4mTx7EwWrpsJkRw67FTSvgyLnY5Ig9E'
 bucket_name = 'minicat'
 
 
+
 def storage(data):
     """七牛云存储上传文件接口"""
     if not data:
