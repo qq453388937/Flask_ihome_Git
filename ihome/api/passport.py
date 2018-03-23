@@ -47,6 +47,7 @@ def my_login():
     session['user_id'] = user.id
     session['name'] = user.name
     session['mobile'] = mobile
+    # 获取session 直接session[''] | session.get()
     # return jsonify(errno=RET.OK, errmsg="ok", data={'user_id': user.id})
     return jsonify(errno=RET.OK, errmsg="ok", data=dict(user_id=user.id))
 
@@ -110,7 +111,7 @@ def set_user_avatar():
     if not avatar:
         return jsonify(errno=RET.PARAMERR, errmsg="用户未上传图片")
     # 读取图片2进制数据
-    avatar_data = avatar.read()
+    avatar_data = avatar.read() # 对比torado [0]["body"]
     # 使用七牛云上传用户头像
     try:
         image_name = storage(avatar_data)
@@ -179,3 +180,22 @@ def get_user_auth():
         return jsonify(errno=RET.NODATA, errmsg="无效操作")
     # 返回查询结果
     return jsonify(errno=RET.OK, errmsg="查询用户实名信息ok", data=user.auth_to_dict())
+
+
+@api.route("/session", methods=["GET"])
+def check_user_login():
+    """不能用登陆装饰器loginrequired,所以要手动获取session,直接用session对象"""
+    session_name = session.get("name")  # 获取ｒｅｄｉｓ中的信息
+    if session_name:
+        return jsonify(errno=RET.OK, errmsg="true", data={"name": session_name})
+    else:
+        return jsonify(errno=RET.SESSIONERR, errmsg="false")
+
+
+@api.route('/session', methods=["DELETE"])
+@login_required
+def logout():
+    csrf_token = session.get("csrf_token")
+    session.clear() # 只清除自己的session登陆信息不是flushall,删除一部分value
+    session["csrf_token"] = csrf_token
+    return jsonify(errno=RET.OK, errmsg="OK")

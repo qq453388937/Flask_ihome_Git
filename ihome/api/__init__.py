@@ -12,12 +12,11 @@ api = Blueprint('api', __name__)
 from . import login
 from . import register
 from . import passport
-
-
+from . import house
 
 
 @api.after_request  # 请求钩子不止app可以用,蓝图也可以用
 def after_request(response):
     if response.headers.get('Content-Type').startswith('text'):
-        response.headers['Content-Type'] = 'application/json'
+        response.headers['Content-Type'] = 'application/json;charset=utf-8;'
     return response
